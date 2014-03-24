@@ -20,15 +20,18 @@
             for (var index=0; index<streamlength;index++) {
               var tweet = streams.home[index];
               var $tweet = $('<div class="tweet"></div>');
-              $tweet.text(tweet.created_at+ '@' + tweet.user + ': ' + tweet.message);
+              var $tweet_timestamp = $('<div class="timestamp"></div>');
+              $tweet.text('@' + tweet.user + ': ' + tweet.message);
+              $tweet_timestamp.text("Created on " + tweet.created_at);
               $tweet.prependTo($("#tweets"));
+              $tweet_timestamp.appendTo($tweet);
             }
           }
           
 
         
           // Refresh the page to see new tweets every 3 seconds
-          setInterval(refreshTweets,3000);
+          setInterval(refreshTweets,2000);
         });
 
       </script>
