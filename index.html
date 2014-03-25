@@ -10,8 +10,8 @@
     <div id="head">
       <h1>Twittler!</h1>
       <button id="allbutton">View All Tweets</button>
-      <textarea id="usertweet" cols="50" rows="2"></textarea><br>
-      <button id="submittweet">Twittle!</button>
+      <textarea id="usertweet" maxlength="160" cols="50" rows="2"></textarea><br>
+      <button id="submittweet">Tweetle!</button>
     </div>
 
     <div id="tweets"></div>
@@ -21,9 +21,14 @@
 
           // Ask the visitor to provide their name--this is a global variable
           visitor = prompt("Please enter your name", "Visitor");
+          if (!visitor) {
+            visitor = "Anonymous";  //If user puts no name
+          } else {
+            visitor = visitor.slice(0,20); //Looks ugly if inputted name was longer than 20 chars
+          }
           streams.users[visitor] = [];
-          // REMEMBER TO CHECK FOR WHAT HAPPENS IF NO FORM IS FILLED OUT
 
+          // Sets the current stream to be the home stream - all tweets
           var current_stream = streams.home;
 
           // Refreshes tweets
@@ -45,6 +50,7 @@
             }
           }
 
+          // When a user name is clicked, view all their tweets by setting current stream
           $("#tweets").on("click", ".tweetuser", function(event) {
             event.preventDefault(); // prevents screen from bubbling up
             var current_user = $(this).closest("span").attr("id");
@@ -54,6 +60,7 @@
             refreshTweets();
           });
           
+          // When the button to view all the tweets, sets current stream ack
           $("#allbutton").on("click", function() {
             current_stream = streams.home;
             $("#allbutton").hide();
@@ -61,17 +68,17 @@
             $("#usertweet, #submittweet").show();
           });
 
+          // Submit a tweet and send it to be added
           $("#submittweet").on("click", function(event) {
             var msg = $("#usertweet").val();
             if (msg==null || msg=="") {
-              alert("You have not entered anything to twittle!");
+              alert("You have not entered anything to tweetle!");
               return false;
             } else {
-              writeTweet(msg);
+              writeTweet(msg.slice(0,160)); //Only write up to 160 characters
               $("#usertweet").val("");
             }
           });
-
         
           refreshTweets(); // Do once when the page loads
           // Refresh the page to see new tweets every 5 seconds
