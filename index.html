@@ -6,30 +6,47 @@
     <script src="data_generator.js"></script>
   </head>
   <body>
-    <div id="head"><h1>Twittler!</h1></div>
+    <div id="head">
+      <h1>Twittler!</h1>
+      <button id="alltweetsbutton">View All Tweets</button>
+    </div>
     <div id="tweets">Post your own tweet here:</div>
       <script>
 
         $(document).ready(function(){
-          
 
+          var current_stream = streams.home;
           
           // Refreshes tweets
           var refreshTweets = function() {
-            var streamlength = streams.home.length - 1;
+            var streamlength = current_stream.length - 1;
             $("#tweets").html('');
             for (var index=0; index<streamlength;index++) {
-              var tweet = streams.home[index];
-              var $tweetuser = '@' + tweet.user;
+              var tweet = current_stream[index];
+              var $tweetuser = $('<div class="tweetuser"></div>');
               var $tweet = $('<div class="tweet"></div>');
               var $tweet_timestamp = $('<div class="timestamp"></div>');
-              $tweet.text($tweetuser + ': ' + tweet.message);
+              $tweet.text(tweet.message);
               $tweet_timestamp.text("Created on " + tweet.created_at);
+              $tweetuser.text('@' + tweet.user + ":");
+              $tweetuser.attr("id",tweet.user);
               $tweet.prependTo($("#tweets"));
+              $tweetuser.prependTo($tweet);
               $tweet_timestamp.appendTo($tweet);
             }
           }
+
+          $("#tweets").on("click", ".tweetuser", function() {
+            var current_user = $(this).closest("div").attr("id");
+            current_stream = streams.users[current_user];
+            $("#alltweetsbutton").css("display", "block");
+            refreshTweets();
+          });
           
+          $("#alltweetsbutton").on("click", function() {
+            current_stream = streams.home;
+            refreshTweets();
+          });
 
         
           // Refresh the page to see new tweets every 5 seconds
