@@ -8,14 +8,24 @@
   <body>
     <div id="head">
       <h1>Twittler!</h1>
-      <button id="alltweetsbutton">View All Tweets</button>
     </div>
-    <div id="tweets">Post your own tweet here:</div>
+    <div id="buttonarea"><button id="allbutton">View All Tweets</button></div>
+    <div id="posttweet">
+      <textarea id="usertweet" cols="50" rows="2"></textarea><br>
+      <button id="submittweet">Twittle!</button>
+    </div>
+    <div id="tweets"></div>
       <script>
 
         $(document).ready(function(){
 
           var current_stream = streams.home;
+
+          // Ask the visitor to provide their name--this is a global variable
+          visitor = prompt("Please enter your name", "Visitor");
+          streams.users[visitor] = [];
+
+          // REMEMBER TO CHECK FOR WHAT HAPPENS IF NO FORM IS FILLED OUT
           
           // Refreshes tweets
           var refreshTweets = function() {
@@ -23,12 +33,12 @@
             $("#tweets").html('');
             for (var index=0; index<streamlength;index++) {
               var tweet = current_stream[index];
-              var $tweetuser = $('<div class="tweetuser"></div>');
+              var $tweetuser = $('<span class="tweetuser"></span>');
               var $tweet = $('<div class="tweet"></div>');
               var $tweet_timestamp = $('<div class="timestamp"></div>');
               $tweet.text(tweet.message);
               $tweet_timestamp.text("Created on " + tweet.created_at);
-              $tweetuser.text('@' + tweet.user + ":");
+              $tweetuser.text('@' + tweet.user + ": ");
               $tweetuser.attr("id",tweet.user);
               $tweet.prependTo($("#tweets"));
               $tweetuser.prependTo($tweet);
@@ -36,21 +46,34 @@
             }
           }
 
-          $("#tweets").on("click", ".tweetuser", function() {
-            var current_user = $(this).closest("div").attr("id");
+          $("#tweets").on("click", ".tweetuser", function(event) {
+            event.preventDefault(); // prevents screen from bubbling up
+            var current_user = $(this).closest("span").attr("id");
             current_stream = streams.users[current_user];
-            $("#alltweetsbutton").css("display", "block");
+            $("#allbutton").css("display", "block");
             refreshTweets();
           });
           
-          $("#alltweetsbutton").on("click", function() {
+          $("#allbutton").on("click", function() {
             current_stream = streams.home;
+            $("#allbutton").hide();
             refreshTweets();
+          });
+
+          $("#submittweet").on("click", function(event) {
+            var msg = $("#usertweet").val();
+            if (msg==null || msg=="") {
+              alert("You have not entered anything to twittle!");
+              return false;
+            } else {
+              writeTweet(msg);
+              $("#usertweet").val("");
+            }
           });
 
         
           // Refresh the page to see new tweets every 5 seconds
-          setInterval(refreshTweets,5000);
+          setInterval(refreshTweets,2000);
         });
 
       </script>
